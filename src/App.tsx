@@ -1,11 +1,38 @@
 import * as React from "react";
-import "./styles.css";
+import { useCycle } from "framer-motion";
+import { createUseStyles } from "react-jss";
 
-export default function App() {
+import Fadeout from "./Fadeout";
+
+const useStyles = createUseStyles({
+  root: {
+    display: 'flex',
+  },
+})
+
+const App = () => {
+  const classes = useStyles();
+  const [isNight, setIsNight] = useCycle(false, true);
+  console.log(isNight)
+  React.useLayoutEffect(() => {
+    const timeoutId = setInterval(
+        () => {
+          setIsNight();
+        },
+        // the night last 4 seconds and the day 8s
+        isNight ? 4000 : 8000
+    );
+    return () => clearInterval(timeoutId);
+}, [isNight, setIsNight]);
+
+
+  // const toggle = () => setIsNight(prev => !prev);
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
+    <div className={classes.root}>
+      <Fadeout text="DAY" animate={isNight} />
+      <Fadeout text="NIGHT" animate={!isNight} />
     </div>
   );
 }
+
+export default App;
